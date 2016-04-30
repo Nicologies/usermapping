@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:schemas-jetbrains-com:teamcity-plugin-v1-xml">
+  <info>
+    <name>UserMapping</name>
+    <display-name>User Mapping Parameter Provider</display-name>
+    <version>@Version@</version>
+    <description>A Plugin to provide user mapping as parameters</description>
+    <download-url>https://github.com/Nicologies/UserMapping/releases/latest</download-url>
+    <email>nicologies@gmail.com</email>
+    <vendor>
+      <name>Nicologies</name>
+      <url>https://github.com/Nicologies/UserMapping/releases/latest</url>
+      <logo>Plugin vendor logo URL</logo>
+    </vendor>
+  </info>
+  <deployment use-separate-classloader="true" />
+</teamcity-plugin>
