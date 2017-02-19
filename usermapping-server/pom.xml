@@ -6,7 +6,7 @@
   <parent>
     <artifactId>usermapping</artifactId>
     <groupId>com.nicologies.usermapping</groupId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
   </parent>
   <artifactId>usermapping-server</artifactId>
   <packaging>jar</packaging>
