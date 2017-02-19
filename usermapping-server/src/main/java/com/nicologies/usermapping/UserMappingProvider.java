@@ -1,18 +1,25 @@
 package com.nicologies.usermapping;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
-import jetbrains.buildServer.util.StringUtil;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 public class UserMappingProvider extends AbstractBuildParametersProvider {
+    private Logger LOG = Logger.getLogger(UserMappingProvider.class);
     private ServerPaths _serverPaths;
 
     public UserMappingProvider(ServerPaths serverPaths) {
@@ -26,31 +33,41 @@ public class UserMappingProvider extends AbstractBuildParametersProvider {
         if (!configDir.exists()) {
             configDir.mkdirs();
         }
-        File configFile = new File(configDir, "usermapping.txt");
-        if (configFile.exists()) {
+
+        File configFile = new File(configDir, "usermapping.json");
+        Type type = new TypeToken<List<User>>(){}.getType();
+        FileReader fileReader;
+
+        try {
+            fileReader = new FileReader(configFile);
+        } catch (FileNotFoundException e) {
+            return new HashMap<>();
+        }
+
+        JsonReader reader = new JsonReader(fileReader);
+        try {
+            Gson gson = new Gson();
+            List<User> users = gson.fromJson(reader, type);
+            users.forEach(u -> MapAUser(u, parameters));
+        } catch(Exception e){
+            e.printStackTrace();
+            LOG.error(e.getMessage());
+        }finally {
             try {
-                List<String> allLines = Files.readAllLines(configFile.toPath(), StandardCharsets.UTF_8);
-                for (String line : allLines) {
-                    if(line.startsWith("--") || line.startsWith("//") || !line.contains("=>")){
-                        continue;
-                    }
-                    String[] split = line.split("=>");
-                    if(split.length != 2){
-                        continue;
-                    }
-                    String orgName = split[0].trim();
-                    String newName = split[1].trim();
-                    if(StringUtil.isEmpty(orgName) || StringUtil.isEmpty(newName)){
-                        continue;
-                    }
-                    parameters.put(UserMappingConstants.PrefixOfUserMapping + orgName, newName);
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
+                reader.close();
+            } catch (IOException e) {
             }
         }
+
         return parameters;
+    }
+
+    private void MapAUser(User user, Map parameters){
+        Map<String, String> newNames = user.getNewNames();
+        user.getOrgNames().forEach(orgName ->
+            newNames.forEach((key, value) ->
+                parameters.put(UserMappingConstants.PrefixOfUserMapping + orgName + "." + key, value)
+        ));
     }
 }
 
