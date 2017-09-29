@@ -1,5 +1,5 @@
 # usermapping
-A teamcity plugin to provide user mapping as parameters so other plugins can map a user to another name
+A teamcity plugin to provide user mapping as parameters so other plugins can map a user to another name. For example, our [Hedwig](https://github.com/Nicologies/Hedwig) will send message to slack/hipchat use the mapped username provided by this plugin when your github/teamcity username is different to the slack/hipchat one.
 
 ## Install
 
